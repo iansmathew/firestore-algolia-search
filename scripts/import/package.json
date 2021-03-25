@@ -1,0 +1,29 @@
+{
+  "name": "@firebaseextensions/fs-algolia-import-collection",
+  "version": "0.1.0",
+  "description": "Import a Firestore Collection into an Algolia Index",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf ./lib",
+    "compile": "tsc",
+    "import": "node ./lib/index.js",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "lib"
+  ],
+  "bin": {
+    "fs-algolia-import-collection": "./lib/index.js"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "algoliasearch": "^4.8.6",
+    "firebase-admin": "^7.1.1",
+    "firebase-functions": "^2.2.1"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.3",
+    "typescript": "^3.8.0"
+  }
+}
