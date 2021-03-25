@@ -1,10 +1,10 @@
-Use this extension to index your Cloud Firestore collection.  The extension is applied and configured to one collection at a time.
+Use this extension to index your Cloud Firestore collection.  The extension is applied and configured on a collection.
 
-This extension listens to your specified Cloud Firestore collection. If a document is added, updated, deleted in a specified collection, this
+This extension listens for changes to the specified collection. If a document is added, updated, or deleted, this
 extension will:
 
-- Add/Update - document will be indexed into Algolia using the configuration defined for the extension.  The document Id will be used as the object id in Algolia.
-- Delete - document will be removed from the index by using the document id.
+- Add/Update - document will be indexed into Algolia.  The fields defined in the extension configuration will be used to send to Algolia.  The document Id will be used as the object id in Algolia.
+- Delete - the Algolia record associate to document id will be removed.
 
 #### Additional setup
 
@@ -13,9 +13,7 @@ Before installing this extension, make sure that you've
 in your Firebase project.
 
 You must also have an Algolia account set up before installing this
-extension. You can do so on the [Algolia][algolia] site.
-
-[algolia]: https://www.algolia.com/
+extension. You can do so on the [Algolia][https://www.algolia.com/] site.
 
 #### Billing
 
