@@ -89,7 +89,30 @@ params:
   - param: ALGOLIA_API_KEY
     label: Algolia API Key
     description: >-
-      Create a new API Key that has addObject, deleteObject, listIndexes, deleteIndex, editSettings, and settings, permissions.  Avoid using the Admin API key if all possible.
+      Create a new API Key that has addObject, deleteObject, listIndexes, deleteIndex, editSettings,
+      and settings, permissions.  Avoid using the Admin API key if all possible.
+    type: string
+    required: true
+    immutable: true
+
+  - param: RECORD_SIZE_LIMIT
+    label: Record Size Limit
+    description: >-
+      Specify the max record limit.  Algolia limits the size of individual records for performance reasons.
+      Depending on the plan, the size limits can vary.  Refer to this [doc](https://www.algolia.com/doc/guides/sending-and-managing-data/prepare-your-data/in-depth/index-and-records-size-and-usage-limitations/) for guidance.
+    type: select
+    options:
+      - label: 10KB
+        value: 10000
+      - label: 100KB
+        value: 100000
+    required: true
+    immutable: true
+
+  - param: RECORD_PROPERTY_FOR_SPLITTING
+    label: Property
+    description: >-
+      Specify the property to split if record size limit is reached.  The specified property can only be a string type.
     type: string
     required: true
     immutable: true

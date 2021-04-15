@@ -21,4 +21,6 @@ exports.default = {
     algoliaIndexName: process.env.ALGOLIA_INDEX_NAME,
     collectionPath: process.env.COLLECTION_PATH,
     fields: process.env.FIELDS,
+    recordSizeLimit: +process.env.RECORD_SIZE_LIMIT,
+    recordPropertyForSplitting: process.env.RECORD_PROPERTY_FOR_SPLITTING,
 };

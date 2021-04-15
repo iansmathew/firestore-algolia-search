@@ -58,7 +58,8 @@ const retrieveDataFromFirestore = async () => {
       logs.warn('Payload size too big, skipping ...', e);
     }
 
-    // We are sending batch updates to Algolia.  We need this to be less than 9 MB (9437184)
+    // We are sending batch updates to Algolia.  If greater than or equal to 9 MB (9437184),
+    // then send to Algolia.
     const size = getObjectSizeInBytes(records);
     if (size >= BATCH_MAX_SIZE) {
       logs.info('Sending bulk Records to Algolia');

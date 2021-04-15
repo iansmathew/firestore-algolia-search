@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
+import { logger } from 'firebase-functions';
 import { DocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
 
 import config from './config';
 import * as logs from './logs';
 import { getObjectSizeInBytes } from './util';
 
-const PAYLOAD_MAX_SIZE = 10240;
 const PAYLOAD_TOO_LARGE_ERR_MSG = 'Record is too large.';
 const trim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 const getFields = () => config.fields ? config.fields.split(',') : [];
 
+type Payload = {
+  [key: string]: boolean | string | number;
+};
 const getPayload = (snapshot: DocumentSnapshot) => {
-  const payload: {
-    [key: string]: boolean | string | number;
-  } = {
+  const payload: Payload = {
     objectID: snapshot.id,
   };
 
@@ -55,14 +56,46 @@ const getPayload = (snapshot: DocumentSnapshot) => {
   });
 
   return payload;
-}
+};
+
+const splitPayload = (payload: Payload, numTimesToSplitRecord: number) => {
+  const value = payload[config.recordPropertyForSplitting];
+  logger.info(payload, value);
+  if (typeof value === 'string') {
+    const splitNumber = value.length / numTimesToSplitRecord;
+    const results = [];
+    for (let i = 0; i < splitNumber; i++) {
+      const start = i * splitNumber;
+      let end = splitNumber * (i + 1);
+      if (end > value.length) {
+        end = value.length;
+      }
+      logger.info(start, end, value.substr(start,  end));
+      results.push({
+        ...payload,
+        'objectID': `${payload.objectID}-${i}`,
+        [config.recordPropertyForSplitting]: value.substr(start, end),
+      });
+    }
+    return results;
+  }
+  // if (getObjectSizeInBytes(value) < config.recordSizeLimit) {
+  //
+  // }
+  return [payload];
+};
 
 export default function extract(snapshot: DocumentSnapshot): object {
   // Check payload size and make sure its within limits before sending for indexing
   const payload = getPayload(snapshot);
-  if (getObjectSizeInBytes(payload) < PAYLOAD_MAX_SIZE) {
+  const payloadSize = getObjectSizeInBytes(payload);
+  if (payloadSize < config.recordSizeLimit) {
     return payload;
   } else {
-    throw new Error(PAYLOAD_TOO_LARGE_ERR_MSG);
+    // TODO: Clean out existing record before creating new ones.
+    // break the specified property to create multiple records
+    const numTimesToSplitRecord = Math.floor(payloadSize / config.recordSizeLimit) + 1;
+    return splitPayload(payload, numTimesToSplitRecord);
+    // throw new Error(PAYLOAD_TOO_LARGE_ERR_MSG);
   }
 }
